@@ -10,16 +10,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-const (
-	TileWidth = 32
-
-	logoText      = "POWERED BY EBITEN"
-	logoTextScale = 4.75
-	logoTextWidth = 6.0 * float64(len(logoText)) * logoTextScale
-	logoTime      = 144 * 3.5
-
-	fadeInTime = 144 * 0.75
-)
+const TileWidth = 16
 
 type RenderSystem struct {
 	Position *component.Position

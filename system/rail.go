@@ -23,7 +23,7 @@ func (s *RailSystem) Update(e gohan.Entity) error {
 		return nil
 	}
 
-	s.Position.X += CameraMoveSpeed
+	s.Position.X += world.RailSpeed
 	return nil
 }
 

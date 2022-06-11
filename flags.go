@@ -17,6 +17,7 @@ func parseFlags() {
 	)
 	flag.BoolVar(&fullscreen, "fullscreen", false, "run in fullscreen mode")
 	flag.BoolVar(&noSplash, "no-splash", false, "skip splash screen")
+	flag.BoolVar(&world.World.GodMode, "god", false, "enable god mode")
 	flag.IntVar(&world.World.Debug, "debug", 0, "print debug information")
 	flag.Parse()
 

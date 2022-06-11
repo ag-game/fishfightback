@@ -21,7 +21,6 @@ import (
 
 const sampleRate = 44100
 
-// game is an isometric demo game.
 type game struct {
 	audioContext *audio.Context
 
@@ -43,14 +42,18 @@ type game struct {
 
 	firstSectionB bool
 
+	activeGamepad int
+
+	gameWon bool
+
 	sync.Mutex
 }
 
-// NewGame returns a new isometric demo game.
 func NewGame() (*game, error) {
 	g := &game{
-		audioContext: audio.NewContext(sampleRate),
-		op:           &ebiten.DrawImageOptions{},
+		audioContext:  audio.NewContext(sampleRate),
+		op:            &ebiten.DrawImageOptions{},
+		activeGamepad: -1,
 	}
 
 	err := g.loadAssets()
@@ -64,11 +67,22 @@ func NewGame() (*game, error) {
 	g.sectionA = world.NewSection(0, 0)
 	g.sectionB = world.NewSection(0, 0)
 
+	g.updateCursor()
+
 	return g, nil
 }
 
 func (g *game) tileToGameCoords(x, y int) (float64, float64) {
 	return float64(x) * 32, float64(y) * 32
+}
+
+func (g *game) updateCursor() {
+	if g.activeGamepad != -1 || g.gameWon {
+		ebiten.SetCursorMode(ebiten.CursorModeHidden)
+		return
+	}
+	ebiten.SetCursorMode(ebiten.CursorModeVisible)
+	ebiten.SetCursorShape(ebiten.CursorShapeCrosshair)
 }
 
 // Layout is called when the game's layout changes.
@@ -121,12 +135,14 @@ func (g *game) Update() error {
 	// Generate next section by repositioning and regenerating previous section.
 	if world.World.CamX+world.ScreenWidth >= g.nextSectionX {
 		s := g.sectionA
+		last := g.sectionB
 		if g.firstSectionB {
 			s = g.sectionB
+			last = g.sectionA
 		}
 
 		s.SetPosition(g.nextSectionX, world.World.CamY)
-		s.Regenerate()
+		s.Regenerate(last.ShoreDepth)
 
 		g.nextSectionX += world.SectionWidth
 		g.firstSectionB = !g.firstSectionB

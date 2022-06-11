@@ -9,8 +9,6 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-const CameraMoveSpeed = 0.25
-
 type CameraSystem struct {
 	Weapon   *component.Weapon
 	Position *component.Position
@@ -29,7 +27,7 @@ func (s *CameraSystem) Update(e gohan.Entity) error {
 
 	world.World.CamMoving = world.World.CamX > 0
 	if world.World.CamMoving {
-		world.World.CamX += CameraMoveSpeed
+		world.World.CamX += world.RailSpeed
 	} else {
 		world.SetMessage("GAME OVER\n\nYOU  WIN!", math.MaxInt)
 		world.World.GameOver = true

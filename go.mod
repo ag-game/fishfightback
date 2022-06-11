@@ -4,8 +4,7 @@ go 1.17
 
 require (
 	code.rocketnine.space/tslocum/gohan v0.0.0-20220611080547-c66dd322f959
-	github.com/hajimehoshi/ebiten/v2 v2.3.3
-	github.com/lafriks/go-tiled v0.7.0
+	github.com/hajimehoshi/ebiten/v2 v2.3.4
 )
 
 require (

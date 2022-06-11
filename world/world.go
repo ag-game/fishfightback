@@ -11,6 +11,8 @@ const (
 	ScreenHeight = 225
 )
 
+const RailSpeed = 0.2
+
 var World = &GameWorld{
 	CamScale:     1,
 	CamMoving:    true,
@@ -24,8 +26,9 @@ type GameWorld struct {
 
 	DisableEsc bool
 
-	Debug  int
-	NoClip bool
+	Debug   int
+	NoClip  bool
+	GodMode bool
 
 	GameStarted      bool
 	GameStartedTicks int

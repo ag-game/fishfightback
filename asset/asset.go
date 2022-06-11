@@ -19,8 +19,8 @@ const sampleRate = 44100
 //go:embed image
 var FS embed.FS
 
-var ImgWhiteSquare = ebiten.NewImage(8, 8)
-var ImgBlackSquare = ebiten.NewImage(8, 8)
+var ImgWhiteSquare = ebiten.NewImage(4, 4)
+var ImgBlackSquare = ebiten.NewImage(4, 4)
 
 var (
 	ImgBat        = FishImage(7)

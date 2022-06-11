@@ -104,7 +104,7 @@ func (s *MovementSystem) Update(e gohan.Entity) error {
 	if world.World.NoClip {
 		return nil
 	}
-	bulletSize := 8.0
+	bulletSize := 4.0
 	bulletRect := image.Rect(int(position.X), int(position.Y), int(position.X+bulletSize), int(position.Y+bulletSize))
 
 	creepBullet := s.CreepBullet
@@ -122,11 +122,16 @@ func (s *MovementSystem) Update(e gohan.Entity) error {
 	}
 
 	if creepBullet != nil {
+
 		playerRect := image.Rect(int(world.World.PlayerX), int(world.World.PlayerY), int(world.World.PlayerX+world.World.PlayerWidth), int(world.World.PlayerY+world.World.PlayerHeight))
 
 		// TODO if not god mode
 		if bulletRect.Overlaps(playerRect) {
-			world.World.SetGameOver()
+			if !world.World.GodMode {
+				world.World.SetGameOver()
+			}
+
+			e.Remove()
 		}
 		return nil
 	}

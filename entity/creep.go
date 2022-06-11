@@ -36,8 +36,6 @@ func NewCreep(creepType int, x, y float64) gohan.Entity {
 		Image: asset.ImgBat,
 	})
 
-	creep.AddComponent(&component.Rail{})
-
 	creep.AddComponent(&component.Creep{
 		Type:       creepType,
 		Health:     32,
