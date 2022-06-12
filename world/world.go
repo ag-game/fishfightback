@@ -67,6 +67,8 @@ type GameWorld struct {
 
 	resetTipShown bool
 
+	ForceSeed int64
+
 	Tick int
 
 	SectionA      *Section
@@ -91,9 +93,10 @@ func Reset() {
 
 	RailSpeed = 0.4
 
-	// TODO Seed is configurable
-	seed := time.Now().UnixNano()
-
+	seed := World.ForceSeed
+	if seed == 0 {
+		seed = time.Now().UnixNano()
+	}
 	rand.Seed(seed)
 
 	log.Printf("Starting game with seed %d", seed)

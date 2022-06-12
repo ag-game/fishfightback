@@ -134,29 +134,32 @@ func (s *MovementSystem) Update(e gohan.Entity) error {
 	creepBullet := s.CreepBullet
 	playerBullet := s.PlayerBullet
 
+	var currentSection = world.World.SectionA
+	if world.World.SectionB.X != 0 && position.X >= world.World.SectionB.X && position.X < world.World.SectionB.X+world.SectionWidth {
+		currentSection = world.World.SectionB
+	}
+	tx, ty := int((position.X-currentSection.X)/TileWidth), int((position.Y-currentSection.Y)/TileWidth)
+	offscreen := tx < 0 || ty < 0 || tx >= world.SectionWidth/TileWidth || ty >= world.ScreenHeight/TileWidth
+
 	// Check hazard collisions.
 	if creepBullet != nil {
+		if offscreen {
+			e.Remove()
+			return nil
+		}
+
 		playerRect := image.Rect(int(world.World.PlayerX), int(world.World.PlayerY), int(world.World.PlayerX+world.World.PlayerWidth), int(world.World.PlayerY+world.World.PlayerHeight))
 		if bulletRect.Overlaps(playerRect) {
 			if !world.World.GodMode {
 				world.World.SetGameOver()
 			}
-
 			e.Remove()
 		}
 		return nil
 	}
 
 	if playerBullet != nil {
-		var currentSection = world.World.SectionA
-		if world.World.SectionB.X != 0 && position.X >= world.World.SectionB.X && position.X < world.World.SectionB.X+world.SectionWidth {
-			currentSection = world.World.SectionB
-		}
-
-		tx, ty := int((position.X-currentSection.X)/TileWidth), int((position.Y-currentSection.Y)/TileWidth)
-
-		// Remove when bullet has gone off-screen.
-		if tx < 0 || ty < 0 || tx >= world.SectionWidth/TileWidth || ty >= world.ScreenHeight/TileWidth {
+		if offscreen {
 			e.Remove()
 			return nil
 		}
