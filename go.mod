@@ -5,6 +5,7 @@ go 1.17
 require (
 	code.rocketnine.space/tslocum/gohan v0.0.0-20220611080547-c66dd322f959
 	github.com/hajimehoshi/ebiten/v2 v2.3.4
+	golang.org/x/text v0.3.7
 )
 
 require (

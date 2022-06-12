@@ -5,7 +5,6 @@ import (
 	"math/rand"
 	"os"
 	"sync"
-	"time"
 
 	"code.rocketnine.space/tslocum/fishfightback/component"
 	"code.rocketnine.space/tslocum/fishfightback/entity"
@@ -72,12 +71,7 @@ func (g *game) tileToGameCoords(x, y int) (float64, float64) {
 }
 
 func (g *game) updateCursor() {
-	if g.activeGamepad != -1 || g.gameWon {
-		ebiten.SetCursorMode(ebiten.CursorModeHidden)
-		return
-	}
-	ebiten.SetCursorMode(ebiten.CursorModeVisible)
-	ebiten.SetCursorShape(ebiten.CursorShapeCrosshair)
+	ebiten.SetCursorMode(ebiten.CursorModeHidden)
 }
 
 // Layout is called when the game's layout changes.
@@ -96,7 +90,6 @@ func (g *game) Update() error {
 
 		if !g.addedSystems {
 			g.addSystems()
-
 			g.addedSystems = true
 		}
 
@@ -105,24 +98,13 @@ func (g *game) Update() error {
 			world.SetFish(level.FishParrot)
 		}
 
-		const playerStartOffset = 128
-		const camStartOffset = 480
-
-		/*	w := float64(world.World.Map.Width * world.World.Map.TileWidth)
-			h := float64(world.World.Map.Height * world.World.Map.TileHeight)*/
-
 		world.World.Player.With(func(position *component.Position) {
-			//position.X, position.Y = w/2, h-playerStartOffset
-
-			position.X, position.Y = 200, 3500
+			position.X, position.Y = float64(rand.Intn(world.ScreenWidth/2)), world.ScreenHeight-system.TileWidth-float64(rand.Intn(100))
 		})
 
-		world.World.CamX, world.World.CamY = 1, 3700-camStartOffset
+		world.World.CamX, world.World.CamY = 0, 0
 
 		g.nextSectionX = 0
-
-		// TODO Seed is configurable
-		rand.Seed(time.Now().UnixNano())
 
 		world.World.ResetGame = false
 		world.World.GameOver = false
@@ -174,8 +156,10 @@ func (g *game) addSystems() {
 		gohan.AddSystem(system.NewRenderSystem(layer))
 	}
 
+	gohan.AddSystem(system.NewRenderHUDSystem())
 	gohan.AddSystem(system.NewRenderMessageSystem())
 	gohan.AddSystem(system.NewRenderDebugTextSystem(world.World.Player))
+	gohan.AddSystem(system.NewRenderCursorSystem())
 	gohan.AddSystem(system.NewProfileSystem(world.World.Player))
 }
 

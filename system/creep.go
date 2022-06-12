@@ -8,7 +8,6 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-// pause time, screen X, screen Y
 type CreepSystem struct {
 	Creep    *component.Creep
 	Position *component.Position
@@ -39,7 +38,7 @@ func (s *CreepSystem) Update(e gohan.Entity) error {
 
 	// Skip inactive creeps.
 	sx, sy := world.LevelCoordinatesToScreen(position.X, position.Y)
-	inactive := sx < 0 || sy < 0 || sx > float64(world.ScreenWidth) || sy > float64(world.ScreenHeight)
+	inactive := sx < 0 || sy < 0 || sx > float64(world.ScreenWidth)+TileWidth/2 || sy > float64(world.ScreenHeight)
 	if creep.Active != !inactive {
 		creep.Active = !inactive
 	}

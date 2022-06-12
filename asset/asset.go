@@ -19,12 +19,17 @@ const sampleRate = 44100
 //go:embed image
 var FS embed.FS
 
-var ImgWhiteSquare = ebiten.NewImage(4, 4)
-var ImgBlackSquare = ebiten.NewImage(3, 3)
+var ColorWater = color.RGBA{96, 160, 168, 255}
 
 var (
-	ImgWater = newWaterImage()
-	ImgFish  = LoadImage("image/cozy-fishing/global.png")
+	ImgWhiteSquare = newFilledImage(4, 4, color.White)
+	ImgBlackSquare = newFilledImage(4, 4, color.Black)
+
+	ImgWater = newFilledImage(16, 16, ColorWater)
+
+	ImgCrosshair = LoadImage("image/crosshair.png")
+
+	ImgFishTileset = LoadImage("image/cozy-fishing/global.png")
 )
 
 func init() {
@@ -32,9 +37,9 @@ func init() {
 	ImgBlackSquare.Fill(color.Black)
 }
 
-func newWaterImage() *ebiten.Image {
-	img := ebiten.NewImage(16, 16)
-	img.Fill(color.RGBA{96, 160, 168, 255})
+func newFilledImage(w int, h int, c color.Color) *ebiten.Image {
+	img := ebiten.NewImage(w, h)
+	img.Fill(c)
 	return img
 }
 
@@ -130,7 +135,7 @@ func FishTileAt(i int) *ebiten.Image {
 
 	r := image.Rect(x*tileSize, y*tileSize, (x+1)*tileSize, (y+1)*tileSize)
 
-	return ImgFish.SubImage(r).(*ebiten.Image)
+	return ImgFishTileset.SubImage(r).(*ebiten.Image)
 }
 
 func FishTileXY(x, y int) *ebiten.Image {
@@ -139,7 +144,7 @@ func FishTileXY(x, y int) *ebiten.Image {
 
 	r := image.Rect(x*tileSize, y*tileSize, (x+1)*tileSize, (y+1)*tileSize)
 
-	return ImgFish.SubImage(r).(*ebiten.Image)
+	return ImgFishTileset.SubImage(r).(*ebiten.Image)
 }
 
 func FishImage(i int) *ebiten.Image {
@@ -152,5 +157,5 @@ func FishImage(i int) *ebiten.Image {
 
 	r := image.Rect(x*tileSize, y*tileSize, (x+1)*tileSize, (y+1)*tileSize)
 
-	return ImgFish.SubImage(r).(*ebiten.Image)
+	return ImgFishTileset.SubImage(r).(*ebiten.Image)
 }

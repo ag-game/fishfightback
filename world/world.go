@@ -2,7 +2,13 @@ package world
 
 import (
 	"fmt"
+	"log"
 	"math"
+	"math/rand"
+	"time"
+
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
 
 	"code.rocketnine.space/tslocum/fishfightback/asset"
 
@@ -17,7 +23,9 @@ const (
 	ScreenHeight = 225
 )
 
-const RailSpeed = 0.2
+var RailSpeed = 0.4
+
+var NumberPrinter = message.NewPrinter(language.English)
 
 var World = &GameWorld{
 	CamScale:     1,
@@ -80,6 +88,15 @@ func Reset() {
 
 	World.SectionA.ShoreDepth = 0
 	World.SectionB.ShoreDepth = 0
+
+	RailSpeed = 0.4
+
+	// TODO Seed is configurable
+	seed := time.Now().UnixNano()
+
+	rand.Seed(seed)
+
+	log.Printf("Starting game with seed %d", seed)
 }
 
 func LevelCoordinatesToScreen(x, y float64) (float64, float64) {
@@ -103,6 +120,8 @@ func (w *GameWorld) SetGameOver() {
 	} else {
 		SetMessage("GAME OVER", math.MaxInt)
 	}
+
+	log.Printf("Game over - score %d", w.Score)
 }
 
 func StartGame() {

@@ -149,7 +149,7 @@ func (s *MovementSystem) Update(e gohan.Entity) error {
 
 	if playerBullet != nil {
 		var currentSection = world.World.SectionA
-		if position.X >= world.World.SectionA.X+world.SectionWidth {
+		if world.World.SectionB.X != 0 && position.X >= world.World.SectionB.X && position.X < world.World.SectionB.X+world.SectionWidth {
 			currentSection = world.World.SectionB
 		}
 
@@ -164,19 +164,20 @@ func (s *MovementSystem) Update(e gohan.Entity) error {
 		// Hit creep.
 		creepEntity := currentSection.Creeps[ty][tx]
 		if creepEntity != 0 {
+			var hitCreep bool
 			creepEntity.With(func(creep *component.Creep) {
-				if creep == nil {
+				if creep == nil || !creep.Active {
 					return
 				}
-
-				if creep.Active {
-					creep.Health--
-					creep.DamageTicks = 6
-				}
+				creep.Health--
+				creep.DamageTicks = 6
+				hitCreep = true
 			})
+			if hitCreep {
+				e.Remove()
+				currentSection.Creeps[ty][tx] = 0
+			}
 
-			e.Remove()
-			currentSection.Creeps[ty][tx] = 0
 		}
 	}
 

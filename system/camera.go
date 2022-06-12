@@ -25,7 +25,7 @@ func (s *CameraSystem) Update(e gohan.Entity) error {
 		return nil
 	}
 
-	world.World.CamMoving = world.World.CamX > 0
+	world.World.CamMoving = world.World.CamX >= 0
 	if world.World.CamMoving {
 		world.World.CamX += world.RailSpeed
 	} else {

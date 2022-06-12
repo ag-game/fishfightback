@@ -14,8 +14,6 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-// TODO tweak
-
 const SectionWidth = ScreenWidth * 2
 
 type Section struct {
@@ -61,8 +59,6 @@ func (s *Section) SetPosition(x float64, y float64) {
 }
 
 func (s *Section) tileAvailable(tx, ty int, creep bool) bool {
-	// TODO use shore map and return false
-
 	if ty < 0 {
 		return true // TODO
 	} else if ty > s.ShoreDepth || (!creep && ty == s.ShoreDepth-1) {
