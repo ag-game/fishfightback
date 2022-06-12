@@ -27,5 +27,7 @@ func NewPlayerBullet(x, y, xSpeed, ySpeed float64) gohan.Entity {
 
 	bullet.AddComponent(&component.PlayerBullet{})
 
+	bullet.AddComponent(&component.Rail{})
+
 	return bullet
 }

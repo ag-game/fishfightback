@@ -28,6 +28,8 @@ type Section struct {
 
 	ShoreDepth int
 
+	Creeps [][]gohan.Entity
+
 	sync.Mutex
 }
 
@@ -40,6 +42,11 @@ func NewSection(x, y float64) *Section {
 	s.TileOccupied = make([][]bool, ScreenHeight/16)
 	for ty := range s.TileOccupied {
 		s.TileOccupied[ty] = make([]bool, SectionWidth/16)
+	}
+
+	s.Creeps = make([][]gohan.Entity, ScreenHeight/16)
+	for ty := range s.Creeps {
+		s.Creeps[ty] = make([]gohan.Entity, SectionWidth/16)
 	}
 
 	return s
@@ -84,11 +91,19 @@ func (s *Section) Regenerate(lastShoreDepth int) {
 		}
 	}
 
-	const minShoreDepth = 3
-	const maxShoreDepth = 7
+	for ty := range s.Creeps {
+		for tx := range s.Creeps[ty] {
+			s.Creeps[ty][tx] = 0
+		}
+	}
 
+	const minShoreDepth = 3
+	const maxShoreDepth = 6
+
+	var firstShore bool
 	if lastShoreDepth == 0 {
 		lastShoreDepth = minShoreDepth + rand.Intn(maxShoreDepth-minShoreDepth)
+		firstShore = true
 	}
 	s.ShoreDepth = lastShoreDepth + 1 - rand.Intn(3)
 	if s.ShoreDepth < minShoreDepth {
@@ -147,17 +162,19 @@ func (s *Section) Regenerate(lastShoreDepth int) {
 					tile = asset.FishTileXY(6, 10)
 				}
 			}
-			if s.ShoreDepth-lastShoreDepth > 0 {
-				if x == 0 && y == lastShoreDepth-1 {
-					tile = asset.FishTileXY(4, 13)
-				} else if x == 0 && y == lastShoreDepth {
-					tile = asset.FishTileXY(0, 14)
-				}
-			} else if s.ShoreDepth-lastShoreDepth < 0 {
-				if x == 0 && y == lastShoreDepth-2 {
-					tile = asset.FishTileXY(3, 13)
+			if !firstShore {
+				if s.ShoreDepth-lastShoreDepth > 0 {
+					if x == 0 && y == lastShoreDepth-1 {
+						tile = asset.FishTileXY(4, 13)
+					} else if x == 0 && y == lastShoreDepth {
+						tile = asset.FishTileXY(0, 14)
+					}
+				} else if s.ShoreDepth-lastShoreDepth < 0 {
+					if x == 0 && y == lastShoreDepth-2 {
+						tile = asset.FishTileXY(3, 13)
 
-					addTile(asset.FishTileXY(2, 14), x, y+1)
+						addTile(asset.FishTileXY(2, 14), x, y+1)
+					}
 				}
 			}
 
@@ -212,10 +229,10 @@ func (s *Section) Regenerate(lastShoreDepth int) {
 		}
 
 		x, y := s.X+float64(tx)*16, s.Y+float64(ty)*16
-
-		s.TileOccupied[ty][tx] = true
-
 		creep := entity.NewCreep(0, x, y)
+
+		s.Creeps[ty][tx] = creep
+		s.TileOccupied[ty][tx] = true
 
 		s.Entities = append(s.Entities, creep)
 	}

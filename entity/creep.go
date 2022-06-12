@@ -33,13 +33,13 @@ func NewCreep(creepType int, x, y float64) gohan.Entity {
 	})
 
 	creep.AddComponent(&component.Sprite{
-		Image: asset.ImgBat,
+		Image: asset.FishImage(int(level.FishMackerel)),
 	})
 
 	creep.AddComponent(&component.Creep{
 		Type:       creepType,
-		Health:     32,
-		FireAmount: 2,
+		Health:     1,
+		FireAmount: 1,
 		FireRate:   144 * 1,
 		Rand:       rand.New(rand.NewSource(creepID)),
 	})

@@ -3,7 +3,6 @@ package system
 import (
 	"fmt"
 	"image/color"
-	_ "image/png"
 
 	"code.rocketnine.space/tslocum/fishfightback/component"
 	"code.rocketnine.space/tslocum/fishfightback/world"

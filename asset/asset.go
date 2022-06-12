@@ -20,21 +20,11 @@ const sampleRate = 44100
 var FS embed.FS
 
 var ImgWhiteSquare = ebiten.NewImage(4, 4)
-var ImgBlackSquare = ebiten.NewImage(4, 4)
+var ImgBlackSquare = ebiten.NewImage(3, 3)
 
 var (
-	ImgBat        = FishImage(7)
-	ImgBatBroken1 = FishTileAt(1)
-	ImgBatBroken2 = FishTileAt(2)
-
 	ImgWater = newWaterImage()
-
-	ImgFish = LoadImage("image/cozy-fishing/global.png")
-
-	ImgFishParrot   = FishImage(1)
-	ImgFishMackarel = FishImage(2)
-	ImgFishClown    = FishImage(3)
-	ImgFishPlaice   = FishImage(4)
+	ImgFish  = LoadImage("image/cozy-fishing/global.png")
 )
 
 func init() {

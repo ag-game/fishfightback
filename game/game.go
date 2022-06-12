@@ -7,9 +7,10 @@ import (
 	"sync"
 	"time"
 
-	"code.rocketnine.space/tslocum/fishfightback/asset"
 	"code.rocketnine.space/tslocum/fishfightback/component"
 	"code.rocketnine.space/tslocum/fishfightback/entity"
+
+	"code.rocketnine.space/tslocum/fishfightback/asset"
 	"code.rocketnine.space/tslocum/fishfightback/level"
 	"code.rocketnine.space/tslocum/fishfightback/system"
 	"code.rocketnine.space/tslocum/fishfightback/world"
@@ -36,11 +37,6 @@ type game struct {
 
 	nextSectionX float64
 
-	sectionA *world.Section
-	sectionB *world.Section
-
-	firstSectionB bool
-
 	activeGamepad int
 
 	gameWon bool
@@ -63,8 +59,8 @@ func NewGame() (*game, error) {
 	const numEntities = 5000 // TODO tweak
 	gohan.Preallocate(numEntities)
 
-	g.sectionA = world.NewSection(0, 0)
-	g.sectionB = world.NewSection(0, 0)
+	world.World.SectionA = world.NewSection(0, 0)
+	world.World.SectionB = world.NewSection(0, 0)
 
 	g.updateCursor()
 
@@ -102,25 +98,28 @@ func (g *game) Update() error {
 			g.addSystems()
 
 			g.addedSystems = true
-
-			if world.World.Player == 0 {
-				world.World.Player = entity.NewPlayer()
-			}
-
-			const playerStartOffset = 128
-			const camStartOffset = 480
-
-			/*	w := float64(world.World.Map.Width * world.World.Map.TileWidth)
-				h := float64(world.World.Map.Height * world.World.Map.TileHeight)*/
-
-			world.World.Player.With(func(position *component.Position) {
-				//position.X, position.Y = w/2, h-playerStartOffset
-
-				position.X, position.Y = 200, 3500
-			})
-
-			world.World.CamX, world.World.CamY = 1, 3700-camStartOffset
 		}
+
+		if world.World.Player == 0 {
+			world.World.Player = entity.NewPlayer()
+			world.SetFish(level.FishParrot)
+		}
+
+		const playerStartOffset = 128
+		const camStartOffset = 480
+
+		/*	w := float64(world.World.Map.Width * world.World.Map.TileWidth)
+			h := float64(world.World.Map.Height * world.World.Map.TileHeight)*/
+
+		world.World.Player.With(func(position *component.Position) {
+			//position.X, position.Y = w/2, h-playerStartOffset
+
+			position.X, position.Y = 200, 3500
+		})
+
+		world.World.CamX, world.World.CamY = 1, 3700-camStartOffset
+
+		g.nextSectionX = 0
 
 		// TODO Seed is configurable
 		rand.Seed(time.Now().UnixNano())
@@ -131,20 +130,20 @@ func (g *game) Update() error {
 
 	world.World.Tick++
 
+	s := world.World.SectionA
+	last := world.World.SectionB
+	if world.World.FirstSectionB {
+		s = world.World.SectionB
+		last = world.World.SectionA
+	}
+
 	// Generate next section by repositioning and regenerating previous section.
 	if world.World.CamX+world.ScreenWidth >= g.nextSectionX {
-		s := g.sectionA
-		last := g.sectionB
-		if g.firstSectionB {
-			s = g.sectionB
-			last = g.sectionA
-		}
-
 		s.SetPosition(g.nextSectionX, world.World.CamY)
 		s.Regenerate(last.ShoreDepth)
 
 		g.nextSectionX += world.SectionWidth
-		g.firstSectionB = !g.firstSectionB
+		world.World.FirstSectionB = !world.World.FirstSectionB
 	}
 
 	err := gohan.Update()
@@ -164,12 +163,12 @@ func (g *game) Draw(screen *ebiten.Image) {
 func (g *game) addSystems() {
 	g.movementSystem = system.NewMovementSystem()
 
+	gohan.AddSystem(system.NewRailSystem())
 	gohan.AddSystem(system.NewPlayerMoveSystem(world.World.Player, g.movementSystem))
 	gohan.AddSystem(system.NewplayerFireSystem())
 	gohan.AddSystem(g.movementSystem)
 	gohan.AddSystem(system.NewCreepSystem())
 	gohan.AddSystem(system.NewCameraSystem())
-	gohan.AddSystem(system.NewRailSystem())
 
 	for layer := -level.NumLayers + 1; layer <= level.LayerDefault; layer++ {
 		gohan.AddSystem(system.NewRenderSystem(layer))

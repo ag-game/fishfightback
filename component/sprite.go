@@ -10,7 +10,6 @@ type Sprite struct {
 	Image          *ebiten.Image
 	HorizontalFlip bool
 	VerticalFlip   bool
-	DiagonalFlip   bool // TODO unimplemented
 
 	Angle float64
 

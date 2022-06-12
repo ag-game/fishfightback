@@ -1,7 +1,13 @@
 package world
 
 import (
+	"fmt"
 	"math"
+
+	"code.rocketnine.space/tslocum/fishfightback/asset"
+
+	"code.rocketnine.space/tslocum/fishfightback/component"
+	"code.rocketnine.space/tslocum/fishfightback/level"
 
 	"code.rocketnine.space/tslocum/gohan"
 )
@@ -54,18 +60,34 @@ type GameWorld struct {
 	resetTipShown bool
 
 	Tick int
+
+	SectionA      *Section
+	SectionB      *Section
+	FirstSectionB bool
+
+	Score int
 }
 
 func Reset() {
 	for _, e := range gohan.AllEntities() {
 		e.Remove()
 	}
-	World.Player = 0
+
 	World.MessageVisible = false
+	World.FirstSectionB = false
+	World.Player = 0
+	World.Score = 0
+
+	World.SectionA.ShoreDepth = 0
+	World.SectionB.ShoreDepth = 0
 }
 
 func LevelCoordinatesToScreen(x, y float64) (float64, float64) {
 	return (x - World.CamX) * World.CamScale, (y - World.CamY) * World.CamScale
+}
+
+func ScreenToLevelCoordinates(x, y float64) (float64, float64) {
+	return World.CamX + x, World.CamY + y
 }
 
 func (w *GameWorld) SetGameOver() {
@@ -96,4 +118,19 @@ func SetMessage(message string, duration int) {
 	World.MessageUpdated = true
 	World.MessageDuration = duration
 	World.MessageTicks = 0
+}
+
+func SetFish(fish level.FishType) {
+	fishInfo := level.AllFish[fish]
+	if fishInfo == nil {
+		panic(fmt.Sprintf("unknown fish type %d", fish))
+	}
+
+	World.Player.With(func(weapon *component.Weapon, sprite *component.Sprite) {
+		weapon.Damage = fishInfo.Damage
+		weapon.FireRate = fishInfo.FireRate
+		weapon.BulletSpeed = fishInfo.BulletSpeed
+
+		sprite.Image = asset.FishImage(int(fish))
+	})
 }

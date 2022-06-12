@@ -88,11 +88,15 @@ func (s *playerMoveSystem) Update(e gohan.Entity) error {
 			if s.Velocity.X < -moveSpeed {
 				s.Velocity.X = -moveSpeed
 			}
+
+			s.Sprite.HorizontalFlip = false
 		} else {
 			s.Velocity.X += accelSpeed
 			if s.Velocity.X > moveSpeed {
 				s.Velocity.X = moveSpeed
 			}
+
+			s.Sprite.HorizontalFlip = true
 		}
 	} else if s.Velocity.X != 0 {
 		s.Velocity.X -= s.Velocity.X / decelRate
@@ -120,6 +124,7 @@ func (s *playerMoveSystem) Update(e gohan.Entity) error {
 			s.Velocity.Y = 0
 		}
 	}
+
 	return nil
 }
 

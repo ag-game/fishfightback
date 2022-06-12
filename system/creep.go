@@ -32,6 +32,8 @@ func (s *CreepSystem) Update(e gohan.Entity) error {
 	position := s.Position
 
 	if creep.Health <= 0 {
+		// TODO replace with dead sprite.
+		e.Remove()
 		return nil
 	}
 
@@ -60,7 +62,7 @@ func (s *CreepSystem) Update(e gohan.Entity) error {
 	randVelocity := func() (float64, float64) {
 		for {
 			vx := creep.Rand.Float64()*0.5 + (0.5 - creep.Rand.Float64())
-			vy := creep.Rand.Float64()*0.5 + (0.5 - creep.Rand.Float64())
+			vy := creep.Rand.Float64() * 0.5
 			if vx > 0.5 || vx < -0.5 || vy > 0.5 || vy < -0.5 {
 				return vx, vy
 			}
@@ -73,9 +75,6 @@ func (s *CreepSystem) Update(e gohan.Entity) error {
 
 			if creep.Rand.Intn(2) == 0 {
 				vx *= -1
-			}
-			if creep.Rand.Intn(2) == 0 {
-				vy *= -1
 			}
 			entity.NewCreepBullet(position.X, position.Y, vx, vy)
 		}

@@ -16,15 +16,11 @@ func NewPlayer() gohan.Entity {
 
 	player.AddComponent(&component.Velocity{})
 
-	weapon := &component.Weapon{
-		Damage:      1,
-		FireRate:    144 / 16,
-		BulletSpeed: 8,
-	}
+	weapon := &component.Weapon{}
 	player.AddComponent(weapon)
 
 	player.AddComponent(&component.Sprite{
-		Image: asset.ImgBat,
+		Image: asset.FishImage(int(level.FishParrot)),
 	})
 
 	player.AddComponent(&component.Rail{})

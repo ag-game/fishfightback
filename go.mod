@@ -20,3 +20,5 @@ require (
 	golang.org/x/sync v0.0.0-20220601150217-0de741cfad7f // indirect
 	golang.org/x/sys v0.0.0-20220610221304-9f5ed59c137d // indirect
 )
+
+replace code.rocketnine.space/tslocum/gohan => /home/trevor/programming/gohan

@@ -1,15 +1,13 @@
 package system
 
 import (
+	"math"
+
 	"code.rocketnine.space/tslocum/fishfightback/component"
 	"code.rocketnine.space/tslocum/fishfightback/entity"
 	"code.rocketnine.space/tslocum/fishfightback/world"
 	"code.rocketnine.space/tslocum/gohan"
 	"github.com/hajimehoshi/ebiten/v2"
-)
-
-const (
-	fireSpeed = 1.5
 )
 
 type playerFireSystem struct {
@@ -31,10 +29,16 @@ func (s *playerFireSystem) Update(e gohan.Entity) error {
 	position := s.Position
 	weapon := s.Weapon
 
+	cx, cy := ebiten.CursorPosition()
+	px, py := world.LevelCoordinatesToScreen(s.Position.X+8, s.Position.Y+8)
+	pa := angle(float64(cx), float64(cy), px, py)
+
 	if ebiten.IsKeyPressed(ebiten.KeyZ) || ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
 		if weapon.NextFire == 0 {
-			entity.NewPlayerBullet(position.X-8, position.Y-8, 0, -weapon.BulletSpeed)
-			entity.NewPlayerBullet(position.X+8, position.Y-8, 0, -weapon.BulletSpeed)
+			bx := math.Cos(pa) * weapon.BulletSpeed
+			by := math.Sin(pa) * weapon.BulletSpeed
+
+			entity.NewPlayerBullet(position.X+6, position.Y+6, bx, by)
 			weapon.NextFire = weapon.FireRate
 		}
 	}
