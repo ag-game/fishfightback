@@ -1,6 +1,7 @@
 package system
 
 import (
+	"math"
 	"os"
 
 	"code.rocketnine.space/tslocum/fishfightback/component"
@@ -11,7 +12,10 @@ import (
 )
 
 const (
-	moveSpeed = 1.0
+	moveSpeed      = 0.6
+	accelSpeed     = 0.01
+	decelRate      = 40
+	decelThreshold = 0.01
 )
 
 type playerMoveSystem struct {
@@ -80,23 +84,41 @@ func (s *playerMoveSystem) Update(e gohan.Entity) error {
 	if (pressLeft && !pressRight) ||
 		(pressRight && !pressLeft) {
 		if pressLeft {
-			s.Velocity.X = -moveSpeed
+			s.Velocity.X -= accelSpeed
+			if s.Velocity.X < -moveSpeed {
+				s.Velocity.X = -moveSpeed
+			}
 		} else {
-			s.Velocity.X = moveSpeed
+			s.Velocity.X += accelSpeed
+			if s.Velocity.X > moveSpeed {
+				s.Velocity.X = moveSpeed
+			}
 		}
-	} else {
-		s.Velocity.X = 0
+	} else if s.Velocity.X != 0 {
+		s.Velocity.X -= s.Velocity.X / decelRate
+		if s.Velocity.X > -decelThreshold && s.Velocity.X < decelThreshold {
+			s.Velocity.X = 0
+		}
 	}
 
 	if (pressUp && !pressDown) ||
 		(pressDown && !pressUp) {
 		if pressUp {
-			s.Velocity.Y = -moveSpeed
+			s.Velocity.Y -= accelSpeed
+			if s.Velocity.Y < -moveSpeed {
+				s.Velocity.Y = -moveSpeed
+			}
 		} else {
-			s.Velocity.Y = moveSpeed
+			s.Velocity.Y += accelSpeed
+			if s.Velocity.Y > moveSpeed {
+				s.Velocity.Y = moveSpeed
+			}
 		}
-	} else {
-		s.Velocity.Y = 0
+	} else if s.Velocity.Y != 0 {
+		s.Velocity.Y -= s.Velocity.Y / decelRate
+		if s.Velocity.Y > -decelThreshold && s.Velocity.Y < decelThreshold {
+			s.Velocity.Y = 0
+		}
 	}
 	return nil
 }
@@ -114,4 +136,8 @@ func deltaXY(x1, y1, x2, y2 float64) (dx float64, dy float64) {
 		dy *= -1
 	}
 	return dx, dy
+}
+
+func angle(x1, y1, x2, y2 float64) float64 {
+	return math.Atan2(y1-y2, x1-x2)
 }

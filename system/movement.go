@@ -3,6 +3,7 @@ package system
 import (
 	"image"
 	"image/color"
+	"math"
 
 	"code.rocketnine.space/tslocum/fishfightback/component"
 	"code.rocketnine.space/tslocum/fishfightback/world"
@@ -64,11 +65,16 @@ func (s *MovementSystem) Update(e gohan.Entity) error {
 		vx, vy = vx*2, vy*2
 	}
 
-	position.X, position.Y = position.X+vx, position.Y+vy
-
 	// Force player to remain within the screen bounds.
 	// TODO same for bullets
 	if e == world.World.Player {
+		for math.Abs(vx)+math.Abs(vy) > moveSpeed*1.5 {
+			vx -= vx / 100
+			vy -= vy / 100
+		}
+
+		position.X, position.Y = position.X+vx, position.Y+vy
+
 		screenX, screenY := s.levelCoordinatesToScreen(position.X, position.Y)
 		if screenX < 0 {
 			diff := screenX / world.World.CamScale
@@ -98,6 +104,8 @@ func (s *MovementSystem) Update(e gohan.Entity) error {
 				return nil
 			}
 		}*/
+	} else {
+		position.X, position.Y = position.X+vx, position.Y+vy
 	}
 
 	// Check creepBullet collision.

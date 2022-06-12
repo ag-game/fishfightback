@@ -7,14 +7,13 @@ import (
 	"sync"
 	"time"
 
+	"code.rocketnine.space/tslocum/fishfightback/asset"
 	"code.rocketnine.space/tslocum/fishfightback/component"
 	"code.rocketnine.space/tslocum/fishfightback/entity"
-
-	"code.rocketnine.space/tslocum/gohan"
-
-	"code.rocketnine.space/tslocum/fishfightback/asset"
+	"code.rocketnine.space/tslocum/fishfightback/level"
 	"code.rocketnine.space/tslocum/fishfightback/system"
 	"code.rocketnine.space/tslocum/fishfightback/world"
+	"code.rocketnine.space/tslocum/gohan"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/audio"
 )
@@ -172,9 +171,8 @@ func (g *game) addSystems() {
 	gohan.AddSystem(system.NewCameraSystem())
 	gohan.AddSystem(system.NewRailSystem())
 
-	const layers = 8
-	for i := 0; i > -layers; i-- {
-		gohan.AddSystem(system.NewRenderSystem(i))
+	for layer := -level.NumLayers + 1; layer <= level.LayerDefault; layer++ {
+		gohan.AddSystem(system.NewRenderSystem(layer))
 	}
 
 	gohan.AddSystem(system.NewRenderMessageSystem())
