@@ -182,7 +182,7 @@ func (s *Section) Regenerate(lastShoreDepth int) {
 
 	// Generate buildings.
 	// TODO bag of random buildings
-	addBuildings := rand.Intn(14)
+	addBuildings := rand.Intn(4)
 	for j := 0; j < addBuildings; j++ {
 		specialBuilding := rand.Intn(4) == 0
 
@@ -233,6 +233,44 @@ func (s *Section) Regenerate(lastShoreDepth int) {
 			s.TileOccupied[ty][tx] = true
 
 			s.Entities = append(s.Entities, creep)
+			break
+		}
+	}
+
+	// Generate decorations.
+	const decorations = 4
+	for i := 0; i < decorations; i++ {
+		for attempt := 0; attempt < attempts; attempt++ {
+			tx, ty := rand.Intn(SectionWidth/16), int(float64(rand.Intn(s.ShoreDepth-2)))
+			if !s.tileAvailable(tx, ty, false) || !s.tileAvailable(tx, ty+1, false) || !s.tileAvailable(tx-1, ty, false) || !s.tileAvailable(tx+1, ty, false) || !s.tileAvailable(tx-1, ty+1, false) || !s.tileAvailable(tx+1, ty+1, false) {
+				continue
+			}
+
+			c := rand.Intn(8)
+			for j := 0; j < 2; j++ {
+				x, y := s.X+float64(tx)*16, s.Y+float64(ty+j)*16
+
+				e := gohan.NewEntity()
+
+				e.AddComponent(&component.Position{
+					X: x,
+					Y: y,
+					Z: level.LayerBuilding,
+				})
+
+				img := asset.BeachChairTop(c)
+				if j == 1 {
+					img = asset.BeachChairBottom(c)
+				}
+
+				e.AddComponent(&component.Sprite{
+					Image: img,
+				})
+
+				s.TileOccupied[ty+j][tx] = true
+
+				s.Entities = append(s.Entities, e)
+			}
 			break
 		}
 	}

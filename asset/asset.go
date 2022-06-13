@@ -204,3 +204,11 @@ var allTrash = []*ebiten.Image{
 func TrashImage() *ebiten.Image {
 	return allTrash[rand.Intn(3)]
 }
+
+func BeachChairTop(c int) *ebiten.Image {
+	return FishTileXY(13+c, 0)
+}
+
+func BeachChairBottom(c int) *ebiten.Image {
+	return FishTileXY(13+c, 1)
+}

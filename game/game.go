@@ -99,7 +99,7 @@ func (g *game) Update() error {
 		}
 
 		world.World.Player.With(func(position *component.Position) {
-			position.X, position.Y = float64(rand.Intn(world.ScreenWidth/2)), world.ScreenHeight-system.TileWidth-float64(rand.Intn(100))
+			position.X, position.Y = float64(rand.Intn(world.ScreenWidth/2)), world.ScreenHeight-system.TileWidth*2
 		})
 
 		world.World.CamX, world.World.CamY = 0, 0
