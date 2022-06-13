@@ -162,6 +162,13 @@ func (s *MovementSystem) Update(e gohan.Entity) error {
 							}
 							creep.Health--
 							creep.DamageTicks = 6
+
+							world.World.Kills++
+							if world.World.Kills == world.World.NeedKills {
+								world.LevelUp()
+							}
+							world.World.KillInfoUpdated = true
+
 							hitCreep = true
 						})
 						if hitCreep {

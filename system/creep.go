@@ -60,9 +60,10 @@ func (s *CreepSystem) Update(e gohan.Entity) error {
 
 	randVelocity := func() (float64, float64) {
 		for {
+			const minSpeed = 0.25
 			vx := creep.Rand.Float64()*0.5 + (0.5 - creep.Rand.Float64())
 			vy := creep.Rand.Float64() * 0.5
-			if vx > 0.5 || vx < -0.5 || vy > 0.5 || vy < -0.5 {
+			if (vx > minSpeed || vx < -minSpeed) && (vy > minSpeed || vy < -minSpeed) {
 				return vx, vy
 			}
 		}

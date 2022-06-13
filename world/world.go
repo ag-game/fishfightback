@@ -24,7 +24,7 @@ const (
 )
 
 const (
-	StartingRailSpeed = 0.4
+	StartingRailSpeed = 0.6
 	FishSpeedIncrease = 0.05
 )
 
@@ -81,6 +81,13 @@ type GameWorld struct {
 	FirstSectionB bool
 
 	Score int
+
+	Fish         level.FishType
+	Kills        int
+	NeedKills    int
+	LevelUpTicks int
+
+	KillInfoUpdated bool
 }
 
 func Reset() {
@@ -97,6 +104,11 @@ func Reset() {
 	World.SectionB.ShoreDepth = 0
 
 	RailSpeed = 0.4
+
+	World.Kills = 0
+	World.Fish = level.FishParrot
+	World.NeedKills = NeededKills()
+	World.KillInfoUpdated = true
 
 	seed := World.ForceSeed
 	if seed == 0 {
@@ -153,6 +165,8 @@ func SetFish(fish level.FishType) {
 		panic(fmt.Sprintf("unknown fish type %d", fish))
 	}
 
+	World.Fish = fish
+
 	World.Player.With(func(weapon *component.Weapon, sprite *component.Sprite) {
 		weapon.Damage = fishInfo.Damage
 		weapon.FireRate = fishInfo.FireRate
@@ -162,4 +176,32 @@ func SetFish(fish level.FishType) {
 	})
 
 	RailSpeed = StartingRailSpeed + (FishSpeedIncrease * float64(fish))
+
+	World.NeedKills = NeededKills()
+}
+
+func MaxCreeps() int {
+	const minCreeps = 4
+	const levelUpSeconds = 7
+	level := World.Tick / (144 * levelUpSeconds)
+
+	maxCreeps := minCreeps + math.Pow(2, float64(level)/4)
+	log.Println("level", level, maxCreeps)
+	return int(maxCreeps)
+}
+
+func NeededKills() int {
+	const minCreeps = 2
+	level := int(World.Fish)
+
+	maxCreeps := minCreeps + math.Pow(2, float64(level))
+	log.Println("need creep", level, maxCreeps)
+	return int(maxCreeps * 2)
+}
+
+func LevelUp() {
+	SetFish(World.Fish + 1)
+
+	World.Kills = 0
+	World.LevelUpTicks = 144 * 3
 }

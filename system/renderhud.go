@@ -1,6 +1,10 @@
 package system
 
 import (
+	"fmt"
+
+	"code.rocketnine.space/tslocum/fishfightback/level"
+
 	"code.rocketnine.space/tslocum/fishfightback/component"
 	"code.rocketnine.space/tslocum/fishfightback/world"
 	"code.rocketnine.space/tslocum/gohan"
@@ -17,22 +21,36 @@ type RenderHUDSystem struct {
 	msgImg *ebiten.Image
 	tmpImg *ebiten.Image
 
+	levelUpImg *ebiten.Image
+
+	killInfoWidth float64
+
 	lastScore int
+
+	padding float64
 }
 
 func NewRenderHUDSystem() *RenderHUDSystem {
 	s := &RenderHUDSystem{
-		op:        &ebiten.DrawImageOptions{},
-		msgImg:    ebiten.NewImage(1, 1),
-		tmpImg:    ebiten.NewImage(200, 200),
-		lastScore: -1,
+		op:         &ebiten.DrawImageOptions{},
+		msgImg:     ebiten.NewImage(200, 200),
+		tmpImg:     ebiten.NewImage(200, 200),
+		levelUpImg: ebiten.NewImage(200, 200),
+		lastScore:  -1,
+		padding:    4,
 	}
 
 	return s
 }
 
 func (s *RenderHUDSystem) Update(_ gohan.Entity) error {
-	return gohan.ErrUnregister
+	if world.World.LevelUpTicks != 0 {
+		world.World.LevelUpTicks--
+		if world.World.LevelUpTicks == 0 {
+			world.World.KillInfoUpdated = true
+		}
+	}
+	return nil
 }
 
 func (s *RenderHUDSystem) Draw(_ gohan.Entity, screen *ebiten.Image) error {
@@ -44,37 +62,59 @@ func (s *RenderHUDSystem) Draw(_ gohan.Entity, screen *ebiten.Image) error {
 		s.drawScore()
 	}
 
+	if world.World.KillInfoUpdated {
+		s.drawLevelUp()
+		world.World.KillInfoUpdated = false
+	}
+
 	// Draw score.
 	s.op.GeoM.Reset()
-	s.op.GeoM.Translate(1, world.ScreenHeight-15)
+	s.op.GeoM.Translate(s.padding, world.ScreenHeight-16-s.padding+2)
 	screen.DrawImage(s.msgImg, s.op)
+
+	// Draw level-up info.
+	s.op.GeoM.Reset()
+	s.op.GeoM.Translate(world.ScreenWidth-s.killInfoWidth-s.padding, world.ScreenHeight-16-s.padding+2)
+	screen.DrawImage(s.levelUpImg, s.op)
 	return nil
+}
+
+func (s *RenderHUDSystem) drawLevelUp() {
+	var message string
+	if world.World.Fish == level.FishAngler {
+		message = "MAX EVOLUTION LEVEL!"
+	} else if world.World.LevelUpTicks != 0 {
+		message = fmt.Sprintf("YOU EVOLVED INTO A %s!", level.AllFish[world.World.Fish].Name)
+	} else {
+		message = world.NumberPrinter.Sprintf("%d TO EVOLVE", world.World.NeedKills-world.World.Kills)
+	}
+
+	split := []string{message}
+	width := 0
+	for _, line := range split {
+		lineSize := len(line) * 6
+		if lineSize > width {
+			width = lineSize
+		}
+	}
+	s.killInfoWidth = float64(width)
+
+	s.levelUpImg.Clear()
+	s.tmpImg.Clear()
+	s.op.GeoM.Reset()
+	s.op.GeoM.Scale(1, 1)
+	ebitenutil.DebugPrint(s.tmpImg, message)
+	s.levelUpImg.DrawImage(s.tmpImg, s.op)
+	s.op.ColorM.Reset()
 }
 
 func (s *RenderHUDSystem) drawScore() {
 	message := world.NumberPrinter.Sprintf("%d", world.World.Score)
 
-	split := []string{message}
-	width := 0
-	for _, line := range split {
-		lineSize := len(line) * 12
-		if lineSize > width {
-			width = lineSize
-		}
-	}
-	height := len(split) * 32
-
-	const padding = 8
-	width, height = width+padding*2, height+padding*2
-
-	s.msgImg = ebiten.NewImage(width, height)
-	//s.msgImg.Fill(color.RGBA{17, 17, 17, 100})
-
+	s.msgImg.Clear()
 	s.tmpImg.Clear()
-	s.tmpImg = ebiten.NewImage(width*2, height*2)
 	s.op.GeoM.Reset()
 	s.op.GeoM.Scale(1, 1)
-	//s.op.GeoM.Translate(float64(padding), float64(padding))
 	ebitenutil.DebugPrint(s.tmpImg, message)
 	s.msgImg.DrawImage(s.tmpImg, s.op)
 	s.op.ColorM.Reset()

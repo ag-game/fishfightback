@@ -22,7 +22,7 @@ func NewCreepBullet(x, y, xSpeed, ySpeed float64) gohan.Entity {
 	})
 
 	bullet.AddComponent(&component.Sprite{
-		Image: asset.ImgWhiteSquare,
+		Image: asset.TrashImage(),
 	})
 
 	bullet.AddComponent(&component.CreepBullet{})

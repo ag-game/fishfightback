@@ -215,20 +215,24 @@ func (s *Section) Regenerate(lastShoreDepth int) {
 	}
 
 	// Generate creeps.
-	const numCreeps = 40 // TODO
-	for attempt := 0; attempt < numCreeps; attempt++ {
-		tx, ty := rand.Intn(SectionWidth/16), int(float64(rand.Intn(s.ShoreDepth-1)))
-		if !s.tileAvailable(tx, ty, true) || (ty != 0 && !s.tileAvailable(tx, ty-1, true)) || !s.tileAvailable(tx, ty+1, true) || !s.tileAvailable(tx-1, ty, true) || !s.tileAvailable(tx+1, ty, true) {
-			continue
+	const attempts = 10
+	numCreeps := MaxCreeps()
+	for i := 0; i < numCreeps; i++ {
+		for attempt := 0; attempt < attempts; attempt++ {
+			tx, ty := rand.Intn(SectionWidth/16), int(float64(rand.Intn(s.ShoreDepth-1)))
+			if !s.tileAvailable(tx, ty, true) || (ty != 0 && !s.tileAvailable(tx, ty-1, true)) || !s.tileAvailable(tx, ty+1, true) || !s.tileAvailable(tx-1, ty, true) || !s.tileAvailable(tx+1, ty, true) {
+				continue
+			}
+
+			x, y := s.X+float64(tx)*16, s.Y+float64(ty)*16
+			creep := entity.NewCreep(0, x, y)
+
+			s.Creeps[ty][tx] = creep
+			s.TileOccupied[ty][tx] = true
+
+			s.Entities = append(s.Entities, creep)
+			break
 		}
-
-		x, y := s.X+float64(tx)*16, s.Y+float64(ty)*16
-		creep := entity.NewCreep(0, x, y)
-
-		s.Creeps[ty][tx] = creep
-		s.TileOccupied[ty][tx] = true
-
-		s.Entities = append(s.Entities, creep)
 	}
 }
 

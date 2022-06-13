@@ -7,6 +7,7 @@ import (
 	"image/color"
 	_ "image/png"
 	"io"
+	"math/rand"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/audio"
@@ -158,4 +159,14 @@ func PeepImage(tileset *ebiten.Image, i int, frame int) *ebiten.Image {
 
 	r := image.Rect(offsetX+x*tileSize, offsetY+y*tileSize, offsetX+(x+1)*tileSize, offsetY+(y+1)*tileSize)
 	return tileset.SubImage(r).(*ebiten.Image)
+}
+
+var allTrash = []*ebiten.Image{
+	newFilledImage(4, 4, color.RGBA{229, 30, 42, 255}),
+	newFilledImage(4, 4, color.RGBA{0, 157, 70, 255}),
+	newFilledImage(4, 4, color.RGBA{2, 104, 170, 255}),
+}
+
+func TrashImage() *ebiten.Image {
+	return allTrash[rand.Intn(3)]
 }
