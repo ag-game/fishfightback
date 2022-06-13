@@ -93,8 +93,10 @@ func (s *Section) Regenerate(lastShoreDepth int) {
 		}
 	}
 
-	const minShoreDepth = 3
-	const maxShoreDepth = 6
+	const (
+		minShoreDepth = 6
+		maxShoreDepth = 9
+	)
 
 	var firstShore bool
 	if lastShoreDepth == 0 {

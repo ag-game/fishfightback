@@ -27,5 +27,7 @@ func NewCreepBullet(x, y, xSpeed, ySpeed float64) gohan.Entity {
 
 	bullet.AddComponent(&component.CreepBullet{})
 
+	bullet.AddComponent(&component.Rail{})
+
 	return bullet
 }

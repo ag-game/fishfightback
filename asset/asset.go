@@ -32,13 +32,26 @@ var (
 
 	ImgFish = LoadImage("image/cozy-fishing/global.png")
 
-	ImgPeepBody         = LoadImage("image/cozy-people/characters/char_all.png")
-	ImgPeepClothesShirt = LoadImage("image/cozy-people/clothes/basic.png")
-	ImgPeepClothesPants = LoadImage("image/cozy-people/clothes/pants.png")
+	ImgPeepBody       = LoadImage("image/cozy-people/characters/char_all.png")
+	ImgPeepGlasses    = LoadImage("image/cozy-people/acc/glasses.png")
+	ImgPeepSunglasses = LoadImage("image/cozy-people/acc/glasses_sun.png")
+	ImgPeepShirt      = LoadImage("image/cozy-people/clothes/basic.png")
+	ImgPeepSpaghetti  = LoadImage("image/cozy-people/clothes/spaghetti.png")
+	ImgPeepPants      = LoadImage("image/cozy-people/clothes/pants.png")
 )
 
 var (
 	SoundMusic *audio.Player
+
+	SoundFire *audio.Player
+
+	SoundHit1 *audio.Player
+	SoundHit2 *audio.Player
+	SoundHit3 *audio.Player
+
+	SoundLevelUp *audio.Player
+
+	SoundDie *audio.Player
 )
 
 func init() {
@@ -54,7 +67,23 @@ func newFilledImage(w int, h int, c color.Color) *ebiten.Image {
 
 func LoadSounds(ctx *audio.Context) {
 	SoundMusic = LoadOGG(ctx, "sound/suirad.ogg", true)
-	SoundMusic.SetVolume(0.6)
+	SoundMusic.SetVolume(0.8)
+
+	SoundFire = LoadWAV(ctx, "sound/fx/20.wav")
+	SoundFire.SetVolume(0.4)
+
+	SoundHit1 = LoadWAV(ctx, "sound/fx/10.wav")
+	SoundHit1.SetVolume(0.2)
+	SoundHit2 = LoadWAV(ctx, "sound/fx/12.wav")
+	SoundHit2.SetVolume(0.2)
+	SoundHit3 = LoadWAV(ctx, "sound/fx/13.wav")
+	SoundHit3.SetVolume(0.2)
+
+	SoundLevelUp = LoadWAV(ctx, "sound/fx/16.wav")
+	SoundLevelUp.SetVolume(0.4)
+
+	SoundDie = LoadWAV(ctx, "sound/fx/9.wav")
+	SoundDie.SetVolume(0.6)
 }
 
 func LoadImage(p string) *ebiten.Image {

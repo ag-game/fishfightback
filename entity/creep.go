@@ -42,9 +42,20 @@ func NewCreep(creepType int, x, y float64) gohan.Entity {
 		asset.PeepImage(asset.ImgPeepBody, randCreepType(), 0),
 	}
 	if rand.Intn(3) == 0 {
-		images = append(images, asset.PeepImage(asset.ImgPeepClothesShirt, randCreepType(), 0))
+		if rand.Intn(2) == 0 {
+			images = append(images, asset.PeepImage(asset.ImgPeepGlasses, randCreepType(), 0))
+		} else {
+			images = append(images, asset.PeepImage(asset.ImgPeepSunglasses, randCreepType(), 0))
+		}
 	}
-	images = append(images, asset.PeepImage(asset.ImgPeepClothesPants, randCreepType(), 0))
+	if rand.Intn(2) == 0 {
+		if rand.Intn(2) == 0 {
+			images = append(images, asset.PeepImage(asset.ImgPeepShirt, randCreepType(), 0))
+		} else {
+			images = append(images, asset.PeepImage(asset.ImgPeepSpaghetti, randCreepType(), 0))
+		}
+	}
+	images = append(images, asset.PeepImage(asset.ImgPeepPants, randCreepType(), 0))
 
 	creep.AddComponent(&component.Sprite{
 		Images:  images,

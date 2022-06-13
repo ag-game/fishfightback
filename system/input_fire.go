@@ -3,6 +3,8 @@ package system
 import (
 	"math"
 
+	"code.rocketnine.space/tslocum/fishfightback/asset"
+
 	"code.rocketnine.space/tslocum/fishfightback/component"
 	"code.rocketnine.space/tslocum/fishfightback/entity"
 	"code.rocketnine.space/tslocum/fishfightback/world"
@@ -40,6 +42,9 @@ func (s *playerFireSystem) Update(e gohan.Entity) error {
 
 			entity.NewPlayerBullet(position.X+6, position.Y+6, bx, by)
 			weapon.NextFire = weapon.FireRate
+
+			asset.SoundFire.Rewind()
+			asset.SoundFire.Play()
 		}
 	}
 	if weapon.NextFire > 0 {

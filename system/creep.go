@@ -23,7 +23,7 @@ func NewCreepSystem() *CreepSystem {
 }
 
 func (s *CreepSystem) Update(e gohan.Entity) error {
-	if !world.World.GameStarted {
+	if !world.World.GameStarted || world.World.GameOver {
 		return nil
 	}
 
@@ -60,7 +60,7 @@ func (s *CreepSystem) Update(e gohan.Entity) error {
 
 	randVelocity := func() (float64, float64) {
 		for {
-			const minSpeed = 0.25
+			const minSpeed = 0.1
 			vx := creep.Rand.Float64()*0.5 + (0.5 - creep.Rand.Float64())
 			vy := creep.Rand.Float64() * 0.5
 			if (vx > minSpeed || vx < -minSpeed) && (vy > minSpeed || vy < -minSpeed) {

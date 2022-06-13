@@ -188,7 +188,7 @@ func SetFish(fish level.FishType) {
 }
 
 func MaxCreeps() int {
-	const minCreeps = 4
+	const minCreeps = 7
 	const levelUpSeconds = 7
 	level := World.Tick / (144 * levelUpSeconds)
 
@@ -214,4 +214,7 @@ func LevelUp() {
 
 	World.Score += int(World.Fish) * 1000
 	World.ScoreUpdated = true
+
+	asset.SoundLevelUp.Rewind()
+	asset.SoundLevelUp.Play()
 }

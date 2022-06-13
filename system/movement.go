@@ -3,6 +3,9 @@ package system
 import (
 	"image"
 	"math"
+	"math/rand"
+
+	"code.rocketnine.space/tslocum/fishfightback/asset"
 
 	"code.rocketnine.space/tslocum/fishfightback/component"
 	"code.rocketnine.space/tslocum/fishfightback/world"
@@ -31,7 +34,7 @@ func (s *MovementSystem) Update(e gohan.Entity) error {
 		return nil
 	}
 
-	if world.World.GameOver && e == world.World.Player {
+	if world.World.GameOver {
 		return nil
 	}
 
@@ -90,6 +93,9 @@ func (s *MovementSystem) Update(e gohan.Entity) error {
 		if py-shoreY(currentSection) < -shoreBuffer {
 			if !world.World.NoClip {
 				if !world.World.GodMode {
+					asset.SoundDie.Rewind()
+					asset.SoundDie.Play()
+
 					world.World.SetGameOver()
 				} else {
 					_, newY := world.ScreenToLevelCoordinates(px, shoreY(currentSection)-shoreBuffer)
@@ -127,9 +133,11 @@ func (s *MovementSystem) Update(e gohan.Entity) error {
 		bulletRect := image.Rect(int(position.X), int(position.Y), int(position.X+bulletSize), int(position.Y+bulletSize))
 		if bulletRect.Overlaps(playerRect) {
 			if !world.World.GodMode {
+				asset.SoundDie.Rewind()
+				asset.SoundDie.Play()
+
 				world.World.SetGameOver()
 			}
-			e.Remove()
 		}
 		return nil
 	}
@@ -163,13 +171,28 @@ func (s *MovementSystem) Update(e gohan.Entity) error {
 							creep.Health--
 							creep.DamageTicks = 6
 
-							world.World.Kills++
-							world.World.Score += 25
-							world.World.ScoreUpdated = true
-							if world.World.Kills == world.World.NeedKills {
-								world.LevelUp()
+							hitSound := rand.Intn(3)
+							switch hitSound {
+							case 0:
+								asset.SoundHit1.Rewind()
+								asset.SoundHit1.Play()
+							case 1:
+								asset.SoundHit2.Rewind()
+								asset.SoundHit2.Play()
+							case 2:
+								asset.SoundHit3.Rewind()
+								asset.SoundHit3.Play()
 							}
-							world.World.KillInfoUpdated = true
+
+							if !world.World.GameOver {
+								world.World.Kills++
+								world.World.Score += 25
+								world.World.ScoreUpdated = true
+								if world.World.Kills == world.World.NeedKills {
+									world.LevelUp()
+								}
+								world.World.KillInfoUpdated = true
+							}
 
 							hitCreep = true
 						})
