@@ -92,10 +92,6 @@ func (s *RenderSystem) renderSprite(x float64, y float64, offsetx float64, offse
 	//s.op.GeoM.Translate(float64(s.ScreenW/2.0), float64(s.ScreenH/2.0))
 
 	// Fade in.
-	if world.World.Tick < 72 {
-		colorScale = float64(world.World.Tick) / 72
-	}
-
 	s.op.ColorM.Scale(colorScale, colorScale, colorScale, alpha)
 
 	target.DrawImage(sprite, s.op)

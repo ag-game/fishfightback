@@ -51,10 +51,6 @@ func (s *RenderHUDSystem) Update(_ gohan.Entity) error {
 }
 
 func (s *RenderHUDSystem) Draw(_ gohan.Entity, screen *ebiten.Image) error {
-	if !world.World.GameStarted {
-		return nil
-	}
-
 	if world.World.ScoreUpdated {
 		s.drawScore()
 		world.World.ScoreUpdated = false

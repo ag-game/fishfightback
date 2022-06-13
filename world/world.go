@@ -115,6 +115,8 @@ func Reset() {
 	World.NeedKills = NeededKills()
 	World.KillInfoUpdated = true
 
+	World.Tick = 0
+
 	seed := World.ForceSeed
 	if seed == 0 {
 		seed = time.Now().UnixNano()
