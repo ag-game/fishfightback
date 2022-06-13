@@ -4,6 +4,8 @@ import (
 	"math"
 	"os"
 
+	"code.rocketnine.space/tslocum/fishfightback/asset"
+
 	"code.rocketnine.space/tslocum/fishfightback/component"
 	"code.rocketnine.space/tslocum/fishfightback/world"
 	"code.rocketnine.space/tslocum/gohan"
@@ -59,6 +61,15 @@ func (s *playerMoveSystem) Update(e gohan.Entity) error {
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyControl) && inpututil.IsKeyJustPressed(ebiten.KeyN) {
 		world.World.NoClip = !world.World.NoClip
+		return nil
+	}
+
+	if inpututil.IsKeyJustPressed(ebiten.KeyM) {
+		if asset.SoundMusic.IsPlaying() {
+			asset.SoundMusic.Pause()
+		} else {
+			asset.SoundMusic.Play()
+		}
 		return nil
 	}
 

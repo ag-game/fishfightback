@@ -257,7 +257,7 @@ var AllFish = map[FishType]*FishInfo{
 		FireRate:    baseFireRate - (fireRateIncrement * 10),
 		BulletSpeed: 2 - (bulletSpeedIncrement * 23),
 	},
-	FishAnglerfish: {
+	FishAngler: {
 		Name:        "ANGLER",
 		Damage:      1,
 		FireRate:    baseFireRate - (fireRateIncrement * 10),

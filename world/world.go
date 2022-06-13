@@ -45,9 +45,10 @@ type GameWorld struct {
 
 	DisableEsc bool
 
-	Debug   int
-	NoClip  bool
-	GodMode bool
+	Debug      int
+	StartMuted bool
+	NoClip     bool
+	GodMode    bool
 
 	GameStarted      bool
 	GameStartedTicks int
@@ -80,7 +81,8 @@ type GameWorld struct {
 	SectionB      *Section
 	FirstSectionB bool
 
-	Score int
+	Score        int
+	ScoreUpdated bool
 
 	Fish         level.FishType
 	Kills        int
@@ -99,6 +101,7 @@ func Reset() {
 	World.FirstSectionB = false
 	World.Player = 0
 	World.Score = 0
+	World.ScoreUpdated = true
 
 	World.SectionA.ShoreDepth = 0
 	World.SectionB.ShoreDepth = 0
@@ -149,6 +152,10 @@ func StartGame() {
 		return
 	}
 	World.GameStarted = true
+
+	if !World.StartMuted {
+		asset.SoundMusic.Play()
+	}
 }
 
 func SetMessage(message string, duration int) {
@@ -191,17 +198,20 @@ func MaxCreeps() int {
 }
 
 func NeededKills() int {
-	const minCreeps = 2
+	const minCreeps = 7
 	level := int(World.Fish)
 
-	maxCreeps := minCreeps + math.Pow(2, float64(level))
+	maxCreeps := minCreeps + level*7
 	log.Println("need creep", level, maxCreeps)
-	return int(maxCreeps * 2)
+	return int(maxCreeps)
 }
 
 func LevelUp() {
 	SetFish(World.Fish + 1)
 
 	World.Kills = 0
-	World.LevelUpTicks = 144 * 3
+	World.LevelUpTicks = 144 * 2
+
+	World.Score += int(World.Fish) * 1000
+	World.ScoreUpdated = true
 }

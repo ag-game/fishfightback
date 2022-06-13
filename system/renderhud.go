@@ -25,8 +25,6 @@ type RenderHUDSystem struct {
 
 	killInfoWidth float64
 
-	lastScore int
-
 	padding float64
 }
 
@@ -36,7 +34,6 @@ func NewRenderHUDSystem() *RenderHUDSystem {
 		msgImg:     ebiten.NewImage(200, 200),
 		tmpImg:     ebiten.NewImage(200, 200),
 		levelUpImg: ebiten.NewImage(200, 200),
-		lastScore:  -1,
 		padding:    4,
 	}
 
@@ -58,8 +55,9 @@ func (s *RenderHUDSystem) Draw(_ gohan.Entity, screen *ebiten.Image) error {
 		return nil
 	}
 
-	if world.World.Score != s.lastScore {
+	if world.World.ScoreUpdated {
 		s.drawScore()
+		world.World.ScoreUpdated = false
 	}
 
 	if world.World.KillInfoUpdated {
@@ -86,7 +84,7 @@ func (s *RenderHUDSystem) drawLevelUp() {
 	} else if world.World.LevelUpTicks != 0 {
 		message = fmt.Sprintf("YOU EVOLVED INTO A %s!", level.AllFish[world.World.Fish].Name)
 	} else {
-		message = world.NumberPrinter.Sprintf("%d TO EVOLVE", world.World.NeedKills-world.World.Kills)
+		message = world.NumberPrinter.Sprintf("%d TO GO!", world.World.NeedKills-world.World.Kills)
 	}
 
 	split := []string{message}

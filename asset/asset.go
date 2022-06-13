@@ -17,7 +17,7 @@ import (
 
 const sampleRate = 44100
 
-//go:embed image
+//go:embed image sound
 var FS embed.FS
 
 var ColorWater = color.RGBA{96, 160, 168, 255}
@@ -37,6 +37,10 @@ var (
 	ImgPeepClothesPants = LoadImage("image/cozy-people/clothes/pants.png")
 )
 
+var (
+	SoundMusic *audio.Player
+)
+
 func init() {
 	ImgWhiteSquare.Fill(color.White)
 	ImgBlackSquare.Fill(color.Black)
@@ -49,7 +53,8 @@ func newFilledImage(w int, h int, c color.Color) *ebiten.Image {
 }
 
 func LoadSounds(ctx *audio.Context) {
-	// TODO
+	SoundMusic = LoadOGG(ctx, "sound/suirad.ogg", true)
+	SoundMusic.SetVolume(0.6)
 }
 
 func LoadImage(p string) *ebiten.Image {
