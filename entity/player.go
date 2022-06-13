@@ -20,7 +20,8 @@ func NewPlayer() gohan.Entity {
 	player.AddComponent(weapon)
 
 	player.AddComponent(&component.Sprite{
-		Image: asset.FishImage(int(level.FishParrot)),
+		Image:          asset.FishImage(int(level.FishParrot)),
+		HorizontalFlip: true,
 	})
 
 	player.AddComponent(&component.Rail{})

@@ -39,7 +39,11 @@ func main() {
 		g.Exit()
 	}()
 
-	world.StartGame()
+	if world.World.Debug == 0 {
+		world.SetMessage("POLLUTION... DESTRUCTION...\nTHE FISH HAVE HAD ENOUGH!\nIT'S PAYBACK TIME!\nPRESS <ENTER> TO GET REVENGE!", 144)
+	} else {
+		world.StartGame()
+	}
 
 	err = ebiten.RunGame(g)
 	if err != nil {

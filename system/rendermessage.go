@@ -47,7 +47,7 @@ func (s *RenderMessageSystem) Update(_ gohan.Entity) error {
 }
 
 func (s *RenderMessageSystem) Draw(_ gohan.Entity, screen *ebiten.Image) error {
-	if !world.World.GameStarted || !world.World.MessageVisible {
+	if !world.World.MessageVisible {
 		return nil
 	}
 
@@ -68,23 +68,23 @@ func (s *RenderMessageSystem) drawMessage() {
 	split := strings.Split(world.World.MessageText, "\n")
 	width := 0
 	for _, line := range split {
-		lineSize := len(line) * 12
+		lineSize := len(line) * 6
 		if lineSize > width {
 			width = lineSize
 		}
 	}
-	height := len(split) * 32
+	height := len(split) * 16
 
-	const padding = 8
+	const padding = 4
 	width, height = width+padding*2, height+padding*2
 
 	s.msgImg = ebiten.NewImage(width, height)
-	s.msgImg.Fill(color.RGBA{17, 17, 17, 255})
+	s.msgImg.Fill(color.RGBA{0, 0, 0, 255})
 
 	s.tmpImg.Clear()
 	s.tmpImg = ebiten.NewImage(width*2, height*2)
 	s.op.GeoM.Reset()
-	s.op.GeoM.Scale(2, 2)
+	s.op.GeoM.Scale(1, 1)
 	s.op.GeoM.Translate(float64(padding), float64(padding))
 	ebitenutil.DebugPrint(s.tmpImg, world.World.MessageText)
 	s.msgImg.DrawImage(s.tmpImg, s.op)

@@ -97,7 +97,9 @@ func Reset() {
 		e.Remove()
 	}
 
-	World.MessageVisible = false
+	if World.GameStarted {
+		World.MessageVisible = false
+	}
 	World.FirstSectionB = false
 	World.Player = 0
 	World.Score = 0
@@ -156,6 +158,9 @@ func StartGame() {
 	if !World.StartMuted {
 		asset.SoundMusic.Play()
 	}
+
+	World.MessageVisible = false
+	World.MessageUpdated = false
 }
 
 func SetMessage(message string, duration int) {
@@ -193,7 +198,6 @@ func MaxCreeps() int {
 	level := World.Tick / (144 * levelUpSeconds)
 
 	maxCreeps := minCreeps + math.Pow(2, float64(level)/4)
-	log.Println("level", level, maxCreeps)
 	return int(maxCreeps)
 }
 
@@ -202,7 +206,6 @@ func NeededKills() int {
 	level := int(World.Fish)
 
 	maxCreeps := minCreeps + level*7
-	log.Println("need creep", level, maxCreeps)
 	return int(maxCreeps)
 }
 
