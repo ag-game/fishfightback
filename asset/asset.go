@@ -29,7 +29,11 @@ var (
 
 	ImgCrosshair = LoadImage("image/crosshair.png")
 
-	ImgFishTileset = LoadImage("image/cozy-fishing/global.png")
+	ImgFish = LoadImage("image/cozy-fishing/global.png")
+
+	ImgPeepBody         = LoadImage("image/cozy-people/characters/char_all.png")
+	ImgPeepClothesShirt = LoadImage("image/cozy-people/clothes/basic.png")
+	ImgPeepClothesPants = LoadImage("image/cozy-people/clothes/pants.png")
 )
 
 func init() {
@@ -127,35 +131,31 @@ func LoadOGG(context *audio.Context, p string, loop bool) *audio.Player {
 	return player
 }
 
-func FishTileAt(i int) *ebiten.Image {
-	const tileSize = 16
-	const tilesetWidth = 56
-
-	x, y := i%tilesetWidth, i/tilesetWidth
-
-	r := image.Rect(x*tileSize, y*tileSize, (x+1)*tileSize, (y+1)*tileSize)
-
-	return ImgFishTileset.SubImage(r).(*ebiten.Image)
-}
-
 func FishTileXY(x, y int) *ebiten.Image {
 	const tileSize = 16
-	const tilesetWidth = 56
 
 	r := image.Rect(x*tileSize, y*tileSize, (x+1)*tileSize, (y+1)*tileSize)
-
-	return ImgFishTileset.SubImage(r).(*ebiten.Image)
+	return ImgFish.SubImage(r).(*ebiten.Image)
 }
 
 func FishImage(i int) *ebiten.Image {
 	const tileSize = 16
-	const fishTilesetWidth = 10
+	const tilesetWidth = 10
 
-	x, y := i%fishTilesetWidth, i/fishTilesetWidth
-
+	x, y := i%tilesetWidth, i/tilesetWidth
 	x += 46
 
 	r := image.Rect(x*tileSize, y*tileSize, (x+1)*tileSize, (y+1)*tileSize)
+	return ImgFish.SubImage(r).(*ebiten.Image)
+}
 
-	return ImgFishTileset.SubImage(r).(*ebiten.Image)
+func PeepImage(tileset *ebiten.Image, i int, frame int) *ebiten.Image {
+	const tileSize = 32
+	const tilesetWidth = 8
+
+	x, y := frame%tilesetWidth, frame/tilesetWidth
+	offsetX, offsetY := i*32*8, 0
+
+	r := image.Rect(offsetX+x*tileSize, offsetY+y*tileSize, offsetX+(x+1)*tileSize, offsetY+(y+1)*tileSize)
+	return tileset.SubImage(r).(*ebiten.Image)
 }

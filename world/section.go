@@ -179,11 +179,8 @@ func (s *Section) Regenerate(lastShoreDepth int) {
 	}
 
 	// Generate buildings.
-
 	// TODO bag of random buildings
-
 	addBuildings := rand.Intn(14)
-
 	for j := 0; j < addBuildings; j++ {
 		specialBuilding := rand.Intn(4) == 0
 
@@ -218,9 +215,10 @@ func (s *Section) Regenerate(lastShoreDepth int) {
 	}
 
 	// Generate creeps.
-	for attempt := 0; attempt < 7; attempt++ {
-		tx, ty := rand.Intn(SectionWidth/16), int(float64(rand.Intn(s.ShoreDepth)))
-		if !s.tileAvailable(tx, ty, true) {
+	const numCreeps = 40 // TODO
+	for attempt := 0; attempt < numCreeps; attempt++ {
+		tx, ty := rand.Intn(SectionWidth/16), int(float64(rand.Intn(s.ShoreDepth-1)))
+		if !s.tileAvailable(tx, ty, true) || (ty != 0 && !s.tileAvailable(tx, ty-1, true)) || !s.tileAvailable(tx, ty+1, true) || !s.tileAvailable(tx-1, ty, true) || !s.tileAvailable(tx+1, ty, true) {
 			continue
 		}
 

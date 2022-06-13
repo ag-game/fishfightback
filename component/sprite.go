@@ -26,4 +26,8 @@ type Sprite struct {
 
 	OverrideColorScale bool
 	ColorScale         float64
+
+	OffsetX, OffsetY float64
+
+	Images []*ebiten.Image
 }

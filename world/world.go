@@ -23,7 +23,12 @@ const (
 	ScreenHeight = 225
 )
 
-var RailSpeed = 0.4
+const (
+	StartingRailSpeed = 0.4
+	FishSpeedIncrease = 0.05
+)
+
+var RailSpeed = StartingRailSpeed
 
 var NumberPrinter = message.NewPrinter(language.English)
 
@@ -155,4 +160,6 @@ func SetFish(fish level.FishType) {
 
 		sprite.Image = asset.FishImage(int(fish))
 	})
+
+	RailSpeed = StartingRailSpeed + (FishSpeedIncrease * float64(fish))
 }

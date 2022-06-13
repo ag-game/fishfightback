@@ -2,7 +2,6 @@ package system
 
 import (
 	"image"
-	"image/color"
 	"math"
 
 	"code.rocketnine.space/tslocum/fishfightback/component"
@@ -10,8 +9,6 @@ import (
 	"code.rocketnine.space/tslocum/gohan"
 	"github.com/hajimehoshi/ebiten/v2"
 )
-
-const rewindThreshold = 1
 
 type MovementSystem struct {
 	Position *component.Position
@@ -27,25 +24,6 @@ func NewMovementSystem() *MovementSystem {
 	s := &MovementSystem{}
 
 	return s
-}
-
-func drawDebugRect(r image.Rectangle, c color.Color, overrideColorScale bool) gohan.Entity {
-	rectEntity := gohan.NewEntity()
-
-	rectImg := ebiten.NewImage(r.Dx(), r.Dy())
-	rectImg.Fill(c)
-
-	rectEntity.AddComponent(&component.Position{
-		X: float64(r.Min.X),
-		Y: float64(r.Min.Y),
-	})
-
-	rectEntity.AddComponent(&component.Sprite{
-		Image:              rectImg,
-		OverrideColorScale: overrideColorScale,
-	})
-
-	return rectEntity
 }
 
 func (s *MovementSystem) Update(e gohan.Entity) error {
@@ -128,27 +106,25 @@ func (s *MovementSystem) Update(e gohan.Entity) error {
 	if world.World.NoClip {
 		return nil
 	}
-	bulletSize := 4.0
-	bulletRect := image.Rect(int(position.X), int(position.Y), int(position.X+bulletSize), int(position.Y+bulletSize))
 
 	creepBullet := s.CreepBullet
 	playerBullet := s.PlayerBullet
 
-	var currentSection = world.World.SectionA
-	if world.World.SectionB.X != 0 && position.X >= world.World.SectionB.X && position.X < world.World.SectionB.X+world.SectionWidth {
-		currentSection = world.World.SectionB
-	}
-	tx, ty := int((position.X-currentSection.X)/TileWidth), int((position.Y-currentSection.Y)/TileWidth)
-	offscreen := tx < 0 || ty < 0 || tx >= world.SectionWidth/TileWidth || ty >= world.ScreenHeight/TileWidth
-
-	// Check hazard collisions.
 	if creepBullet != nil {
-		if offscreen {
+		playerRect := image.Rect(int(world.World.PlayerX), int(world.World.PlayerY), int(world.World.PlayerX+world.World.PlayerWidth), int(world.World.PlayerY+world.World.PlayerHeight))
+		bulletSize := 4.0
+
+		var currentSection = world.World.SectionA
+		if world.World.SectionB.X != 0 && position.X >= world.World.SectionB.X && position.X < world.World.SectionB.X+world.SectionWidth {
+			currentSection = world.World.SectionB
+		}
+		tx, ty := int((position.X-currentSection.X)/TileWidth), int((position.Y-currentSection.Y)/TileWidth)
+		if tx < 0 || ty < 0 || tx >= world.SectionWidth/TileWidth || ty >= world.ScreenHeight/TileWidth {
 			e.Remove()
 			return nil
 		}
 
-		playerRect := image.Rect(int(world.World.PlayerX), int(world.World.PlayerY), int(world.World.PlayerX+world.World.PlayerWidth), int(world.World.PlayerY+world.World.PlayerHeight))
+		bulletRect := image.Rect(int(position.X), int(position.Y), int(position.X+bulletSize), int(position.Y+bulletSize))
 		if bulletRect.Overlaps(playerRect) {
 			if !world.World.GodMode {
 				world.World.SetGameOver()
@@ -159,28 +135,47 @@ func (s *MovementSystem) Update(e gohan.Entity) error {
 	}
 
 	if playerBullet != nil {
+		var offscreen bool
+		for oy := -2; oy < 5; oy++ {
+			for ox := -2; ox < 5; ox++ {
+				var currentSection = world.World.SectionA
+				if world.World.SectionB.X != 0 && position.X >= world.World.SectionB.X && position.X < world.World.SectionB.X+world.SectionWidth {
+					currentSection = world.World.SectionB
+				}
+				tx, ty := int((position.X+float64(ox)-currentSection.X)/TileWidth), int((position.Y+float64(oy)-currentSection.Y)/TileWidth)
+				if tx < 0 || ty < 0 || tx >= world.SectionWidth/TileWidth || ty >= world.ScreenHeight/TileWidth {
+					continue // Offscreen
+				}
+				offscreen = false
+
+				// Hit creep.
+				for offset := 0; offset < 2; offset++ {
+					if ty+offset >= world.ScreenHeight/TileWidth {
+						break
+					}
+					creepEntity := currentSection.Creeps[ty+offset][tx]
+					if creepEntity != 0 {
+						var hitCreep bool
+						creepEntity.With(func(creep *component.Creep) {
+							if creep == nil || !creep.Active {
+								return
+							}
+							creep.Health--
+							creep.DamageTicks = 6
+							hitCreep = true
+						})
+						if hitCreep {
+							e.Remove()
+							currentSection.Creeps[ty+offset][tx] = 0
+						}
+					}
+				}
+			}
+		}
+
 		if offscreen {
 			e.Remove()
 			return nil
-		}
-
-		// Hit creep.
-		creepEntity := currentSection.Creeps[ty][tx]
-		if creepEntity != 0 {
-			var hitCreep bool
-			creepEntity.With(func(creep *component.Creep) {
-				if creep == nil || !creep.Active {
-					return
-				}
-				creep.Health--
-				creep.DamageTicks = 6
-				hitCreep = true
-			})
-			if hitCreep {
-				e.Remove()
-				currentSection.Creeps[ty][tx] = 0
-			}
-
 		}
 	}
 

@@ -22,7 +22,9 @@ func NewPlayerBullet(x, y, xSpeed, ySpeed float64) gohan.Entity {
 	})
 
 	bullet.AddComponent(&component.Sprite{
-		Image: asset.ImgBlackSquare,
+		Image:   asset.ImgBlackSquare,
+		OffsetX: -2,
+		OffsetY: -2,
 	})
 
 	bullet.AddComponent(&component.PlayerBullet{})

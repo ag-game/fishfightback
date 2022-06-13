@@ -127,6 +127,11 @@ func (s *RenderSystem) Draw(e gohan.Entity, screen *ebiten.Image) error {
 		colorScale = sprite.ColorScale
 	}
 
-	s.renderSprite(position.X, position.Y, 0, 0, sprite.Angle, 1.0, colorScale, 1.0, sprite.HorizontalFlip, sprite.VerticalFlip, sprite.Image, screen)
+	if len(sprite.Images) == 0 {
+		s.renderSprite(position.X, position.Y, sprite.OffsetX, sprite.OffsetY, sprite.Angle, 1.0, colorScale, 1.0, sprite.HorizontalFlip, sprite.VerticalFlip, sprite.Image, screen)
+	}
+	for _, img := range sprite.Images {
+		s.renderSprite(position.X, position.Y, sprite.OffsetX, sprite.OffsetY, sprite.Angle, 1.0, colorScale, 1.0, sprite.HorizontalFlip, sprite.VerticalFlip, img, screen)
+	}
 	return nil
 }

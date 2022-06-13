@@ -4,6 +4,8 @@ import (
 	"math/rand"
 	"sync"
 
+	"github.com/hajimehoshi/ebiten/v2"
+
 	"code.rocketnine.space/tslocum/fishfightback/asset"
 	"code.rocketnine.space/tslocum/fishfightback/component"
 	"code.rocketnine.space/tslocum/fishfightback/level"
@@ -21,6 +23,10 @@ func newCreepID() int64 {
 	return newestCreepID
 }
 
+func randCreepType() int {
+	return rand.Intn(8)
+}
+
 func NewCreep(creepType int, x, y float64) gohan.Entity {
 	creepID := newCreepID()
 
@@ -32,8 +38,18 @@ func NewCreep(creepType int, x, y float64) gohan.Entity {
 		Z: level.LayerCreep,
 	})
 
+	images := []*ebiten.Image{
+		asset.PeepImage(asset.ImgPeepBody, randCreepType(), 0),
+	}
+	if rand.Intn(3) == 0 {
+		images = append(images, asset.PeepImage(asset.ImgPeepClothesShirt, randCreepType(), 0))
+	}
+	images = append(images, asset.PeepImage(asset.ImgPeepClothesPants, randCreepType(), 0))
+
 	creep.AddComponent(&component.Sprite{
-		Image: asset.FishImage(int(level.FishMackerel)),
+		Images:  images,
+		OffsetX: -16,
+		OffsetY: -16,
 	})
 
 	creep.AddComponent(&component.Creep{
